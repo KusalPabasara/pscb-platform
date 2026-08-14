@@ -1,0 +1,9 @@
+{
+  "defaultUrl": "https://pscb-study-3ss9k7qri-kusals-projects-99bd2f7a.vercel.app/secure-viewer",
+  "allowedOrigins": [
+    "http://127.0.0.1:4173",
+    "http://localhost:4173",
+    "https://pscb-study-3ss9k7qri-kusals-projects-99bd2f7a.vercel.app",
+    "https://vercel.com"
+  ]
+}

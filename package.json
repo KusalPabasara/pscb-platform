@@ -1,0 +1,34 @@
+{
+  "name": "pscb-platform",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:assets": "node scripts/prepare-assets.mjs",
+    "test:secure-viewer": "npm --prefix secure-viewer test",
+    "package:secure-viewer": "npm --prefix secure-viewer run package:windows",
+    "dev": "vite --host 127.0.0.1",
+    "dev:api": "npx vercel dev --listen 3000",
+    "build": "tsc -b && vite build",
+    "vercel:build": "npm run prepare:assets && npm run build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run test && npm run test:secure-viewer && npm run build"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "1.0.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "webgazer": "3.5.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "6.0.5",
+    "jsdom": "^26.1.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  }
+}

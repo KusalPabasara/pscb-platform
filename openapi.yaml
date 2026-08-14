@@ -1,0 +1,133 @@
+openapi: 3.1.0
+info:
+  title: PSCB Viewer Session API
+  version: 1.0.1
+  description: Creates short-lived sessions for the protected iframe viewer.
+servers:
+  - url: https://YOUR-PLATFORM
+paths:
+  /api/v1/demo-sessions:
+    options:
+      summary: Preflight the public browser demo endpoint
+      responses:
+        '204':
+          description: Demo origin accepted
+    post:
+      summary: Create a two-minute public demo viewer session
+      description: Public evaluation only. The documentId must start with demo-. Browser requests must use their exact Origin as allowedOrigin.
+      security:
+        - demoBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDemoSession'
+      responses:
+        '201':
+          description: Demo session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewerSession'
+        '400':
+          description: Invalid demo request
+        '401':
+          description: Invalid public demo key
+        '403':
+          description: Browser origin mismatch
+  /api/v1/sessions:
+    post:
+      summary: Create a viewer session
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSession'
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewerSession'
+        '400':
+          description: Invalid request
+        '401':
+          description: Invalid API key
+        '503':
+          description: Session signing is not configured
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    demoBearer:
+      type: http
+      scheme: bearer
+      description: Public evaluation key documented in the private delivery guide. Never use for production authorization.
+  schemas:
+    CreateDemoSession:
+      type: object
+      required: [documentId, allowedOrigin]
+      additionalProperties: false
+      properties:
+        documentId:
+          type: string
+          pattern: '^demo-[A-Za-z0-9._:-]{1,115}$'
+          examples: [demo-boss-site]
+        allowedOrigin:
+          type: string
+          format: uri
+          examples: [http://127.0.0.1:5173]
+    CreateSession:
+      type: object
+      required: [documentId, allowedOrigin]
+      additionalProperties: false
+      properties:
+        documentId:
+          type: string
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$'
+        allowedOrigin:
+          type: string
+          format: uri
+          examples: [https://customer.example]
+        expiresIn:
+          type: integer
+          minimum: 60
+          maximum: 900
+          default: 300
+    ViewerSession:
+      type: object
+      required: [object, version, sessionId, documentId, allowedOrigin, expiresAt, token, delivery]
+      properties:
+        object:
+          const: viewer.session
+        version:
+          const: '1'
+        sessionId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+        allowedOrigin:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        token:
+          type: string
+          description: Short-lived signed viewer token. Do not persist it.
+        delivery:
+          type: object
+          required: [sdkUrl, viewerUrl]
+          properties:
+            sdkUrl:
+              type: string
+              format: uri
+            viewerUrl:
+              type: string
+              format: uri

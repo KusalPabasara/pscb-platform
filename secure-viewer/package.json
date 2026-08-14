@@ -1,0 +1,16 @@
+{
+  "name": "pscb-secure-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Windows-first protected web application viewer research client",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.node-test.cjs",
+    "package:windows": "electron-packager . \"PSCB Secure Viewer\" --platform=win32 --arch=x64 --out=../deliverables/secure-viewer --overwrite --asar --prune=true --ignore=\"^/test($|/)\" --ignore=\"^/scripts($|/)\""
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "43.4.0"
+  }
+}

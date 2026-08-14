@@ -1,0 +1,12 @@
+.git/
+.vercel/
+node_modules/
+secure-viewer/node_modules/
+secure-viewer/dist/
+secure-viewer/out/
+deliverables/
+release/
+coverage/
+study-data/
+*.local
+*.tsbuildinfo
