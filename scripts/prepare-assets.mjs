@@ -1,4 +1,5 @@
-import { cp, mkdir, stat, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { cp, mkdir, readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,7 +11,7 @@ const legacyFaceMeshSource = resolve(root, 'node_modules/@mediapipe/face_mesh');
 const legacyFaceMeshTarget = resolve(root, 'public/mediapipe/face_mesh');
 const webgazerSource = resolve(root, 'node_modules/webgazer/dist/webgazer.js');
 const webgazerTarget = resolve(root, 'public/vendor/webgazer.js');
-const modelUrl = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task';
+const modelSha256 = '64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff';
 
 await mkdir(wasmTarget, { recursive: true });
 await cp(wasmSource, wasmTarget, { recursive: true });
@@ -18,13 +19,8 @@ await cp(legacyFaceMeshSource, legacyFaceMeshTarget, { recursive: true });
 await mkdir(dirname(webgazerTarget), { recursive: true });
 await cp(webgazerSource, webgazerTarget);
 
-try {
-  await stat(modelTarget);
-} catch {
-  const response = await fetch(modelUrl);
-  if (!response.ok) throw new Error(`Model download failed with status ${response.status}`);
-  await mkdir(dirname(modelTarget), { recursive: true });
-  await writeFile(modelTarget, new Uint8Array(await response.arrayBuffer()));
-}
+const model = await readFile(modelTarget);
+const modelDigest = createHash('sha256').update(model).digest('hex');
+if (modelDigest !== modelSha256) throw new Error('Committed MediaPipe model checksum does not match.');
 
 process.stdout.write('Local MediaPipe runtime assets are ready.\n');

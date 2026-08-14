@@ -9,7 +9,10 @@ pnpm-debug.log*
 *.local
 *.tsbuildinfo
 study-data/
-public/mediapipe/
+public/mediapipe/*
+!public/mediapipe/models/
+public/mediapipe/models/*
+!public/mediapipe/models/face_landmarker.task
 public/vendor/
 .DS_Store
 .vercel
